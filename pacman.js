@@ -1,11 +1,44 @@
 // Setup initial game stats
 var score = 0;
 var lives = 2;
+var powerPellets = 4;
 
 
 // Define your ghosts here
+var curly = {
+  menuOption: '1',
+  name: 'Curly',
+  colour: 'Red',
+  character: 'Sassy',
+  edible: false
+}
 
-// replace this comment with your four ghosts setup as objects
+var moe = {
+  menuOption: '2',
+  name: 'Moe',
+  colour: 'Blue',
+  character: 'Bossy',
+  edible: false
+}
+
+var larry = {
+  menuOption: '3',
+  name: 'Larry',
+  colour: 'Pink',
+  character: 'Brainy',
+  edible: false
+}
+
+var shemp = {
+  menuOption: '4',
+  name: 'Shemp',
+  colour: 'Orange',
+  character: 'Goofy',
+  edible: false
+}
+
+var ghosts = [curly, moe, larry, shemp]
+
 
 
 // Draw the screen functionality
@@ -23,12 +56,24 @@ function clearScreen() {
 }
 
 function displayStats() {
-  console.log('Score: ' + score + '     Lives: ' + lives);
+  console.log('Score: ' + score + '     Lives: ' + lives + '\n\nPower-Pellets: ' + powerPellets);
 }
 
 function displayMenu() {
   console.log('\n\nSelect Option:\n');  // each \n creates a new line
   console.log('(d) Eat Dot');
+  ghosts.forEach(
+    function (currentGhost) {
+      console.log(`(${currentGhost.menuOption}) Eat ${currentGhost.name}` + ( currentGhost.edible ? " (edible)" : " (inedible)" ) );
+    }
+  )
+  // console.log('(1) Eat Curly');
+  // console.log('(2) Eat Moe');
+  // console.log('(3) Eat Larry');
+  // console.log('(4) Eat Shemp');
+  if (powerPellets > 0){
+    console.log('(p) POWER PELLETS');
+  };
   console.log('(q) Quit');
 }
 
@@ -55,9 +100,59 @@ function processInput(key) {
     case 'd':
       eatDot();
       break;
+    case '1':
+      eatGhost(ghosts[0]);
+      break;
+    case '2':
+      eatGhost(ghosts[1]);
+      break;
+    case '3':
+      eatGhost(ghosts[2]);
+      break;
+    case '4':
+      eatGhost(ghosts[3]);
+      break;
+    case 'p':
+      if (powerPellets > 0){
+        eatPowerPellet();
+      } else {
+        console.log("\n******!!!NO POWER PELLETS LEFT!!!******");
+      }
+      break;
     default:
       console.log('\nInvalid Command!');
   }
+  isGameOver();
+}
+
+// Function to eat ghosts
+
+function eatGhost(ghost) {
+  if (ghost.edible){
+    console.log(`\nYou just ate ${ghost.name} you bastard. He/she was so ${ghost.character}`);
+    score += 200;
+    ghost.edible = false;
+  } else {
+    lives--;
+    console.log(`\n${ghost.colour} ${ghost.name} ate you!`);
+  }
+}
+
+// Process game over
+function isGameOver() {
+  if (lives < 0){
+    process.exit();
+  }
+}
+
+// Process eat power pellets
+function eatPowerPellet() {
+  score += 50;
+  ghosts.forEach(
+    function(each_ghost) {
+    each_ghost.edible = true;
+  });
+  powerPellets--;
 }
 
 
@@ -84,4 +179,3 @@ stdin.on('data', function(key) {
 // Player Quits
 process.on('exit', function() {
   console.log('\n\nGame Over!\n');
-});
